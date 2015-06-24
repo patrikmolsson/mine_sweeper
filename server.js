@@ -53,6 +53,23 @@ router.route('/boards/:board_id')
 		res.json(stripBoard(boards[req.params.board_id]));
 	});
 
+
+// '/boards/:board_id/:row/:col/:action' ---------------
+// Actions:	0 = flag,
+//			1 = solve
+router.route('/boards/:board_id/:row/:col/:action')
+
+	.post(function(req, res){
+		var action = parseInt(req.params.action);
+
+		if( action == 1) 
+			solveMine(parseInt(req.params.board_id), parseInt(req.params.row), parseInt(req.params.col));
+		else if( action == 0 )
+			flagMine(parseInt(req.params.board_id), parseInt(req.params.row), parseInt(req.params.col));
+
+		res.json(stripBoard(boards[req.params.board_id]));
+	});
+
 // REGISTER ROUTES
 // /api/v[x]
 app.use('/api/v' + api_version, router);
@@ -158,16 +175,31 @@ function solveMine(board_id, row, col){ //Recursive function to solve mine.
 		col < 0 || col > boards[board_id].num_cols - 1 ) // The base case. Out of bounds.
 		return;
 
-	if( boards[board_id][row][col].internal > 0 || boards[board_id][row][col].internal == -1 ) // Solve the mine, which will return the mine or the number of nearby mines.
-		boards[board_id][row][col].external = boards[board_id][row][col].internal;
-	else { // If is has no mine or no nearby mines, expand. We can do this recursively. 
+	if( boards[board_id].data[row][col].external != -3) // Second base. Already solved or flagged.
+		return;
+
+	if( boards[board_id].data[row][col].internal > 0 || boards[board_id].data[row][col].internal == -1 ){ // Solve the mine, which will return the mine or the number of nearby mines.
+		boards[board_id].data[row][col].external = boards[board_id].data[row][col].internal;
+		return;
+
+	} else if ( boards[board_id].data[row][col].internal == 0 ) { // If is has no mine or no nearby mines, expand. We can do this recursively. 
 		for (var diff_row = -1; diff_row <= 1; diff_row++) {	
 			for (var diff_col = -1; diff_col <= 1; diff_col++) {
-				if( diff_col != 0 || diff_row != 0)
+				if( diff_col != 0 || diff_row != 0){
+					boards[board_id].data[row][col].external = 0;
 					solveMine(board_id, row + diff_row, col + diff_col);
+				}
 			};
 		};
 	}
+}
+
+function flagMine(board_id, row, col){
+	if( row < 0 || row > boards[board_id].num_rows - 1 || 
+		col < 0 || col > boards[board_id].num_cols - 1 ) // Out of bounds.
+		return;
+
+	boards[board_id].data[row][col].external = POS_FLAGGED;
 }
 
 function boardSweeped(board_id){
