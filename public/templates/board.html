@@ -1,0 +1,22 @@
+<div class="page-header">
+	<h2>Sweeping board <small>#{{board.id}}</small></h2>
+	<a class="btn btn-default" href="#/">Back</a> 
+	<div>
+		Time elapsed: {{board.start_time}} {{board.end_time}}
+	</div>
+</div>
+
+<ul class="nav nav-pills">
+	<li ng-class="{active: isSolving()}"><a ng-click="solving(true)">Solving</a></li>
+	<li ng-class="{active: !isSolving()}"><a ng-click="solving(false)">Flagging</a></li>
+</ul>
+
+<table class="fixed board">
+	<tr ng-repeat="row in board.rows track by $index">
+		<td 
+			ng-repeat="mine in row.mines track by $index" 
+			ng-click="mineClicked($parent.$index, $index)" 
+			ng-class="{'wrong-flag': mine.value == -4, 'blank': mine.value == -3, 'flag': mine.value == -2, 'mine': mine.value == -1, 'sweeped': mine.value == 0}" 
+			class="tile">{{mine.value > 0 ? mine.value : ""}}</td>	
+	</tr>
+</table>

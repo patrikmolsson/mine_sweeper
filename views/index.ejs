@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/res/bootstrap.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+    <script src="/javascripts/res/angular.min.js"></script>
+    <script src="/javascripts/res/angular-route.min.js"></script>
+    <script type="text/javascript" src="/javascripts/angularApp.js"></script>
+    <script type="text/javascript" src="/javascripts/routes.js"></script>
+    <script type="text/javascript" src="/javascripts/apiService.js"></script>
+    <script type="text/javascript" src="/javascripts/mineService.js"></script>
+    <script type="text/javascript" src="/javascripts/boardController.js"></script>
+  </head>
+  <body ng-app="mineSweeper">
+  	<div ng-view class="container">
+  	</div>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+<div class="jumbotron">
+	<h1>Minesweeper GUI</h1>
+	<button ng-click="addBoard()" class="btn btn-lg btn-primary">Add board</button>
+</div>
+
+<div ng-repeat="board in boards" class="col-md-3">
+	<div class="thumbnail">
+		<h4>Board</h4>
+		#{{board.id}}
+		<a href="#/boards/{{board.id}}" class="btn btn-block btn-primary">Solve</a>
+		<button ng-click="removeBoard(board.id)" class="btn btn-block btn-danger">Remove</a>
+	</div>
+</div>
