@@ -2,12 +2,24 @@
 	<h1>Minesweeper GUI</h1>
 	<button ng-click="addBoard()" class="btn btn-lg btn-primary">Add board</button>
 </div>
+<div>
+	<div class="row" ng-repeat="stat in [0,1,2]">
+		<h2 ng-if="stat == 0">On going</h2>
+		<h2 ng-if="stat == 1">Solved</h2>
+		<h2 ng-if="stat == 2">Failed</h2>
 
-<div ng-repeat="board in boards" class="col-md-3">
-	<div class="thumbnail">
-		<h4>Board</h4>
-		#{{board.id}}
-		<a href="#/boards/{{board.id}}" class="btn btn-block btn-primary">Solve</a>
-		<button ng-click="removeBoard(board.id)" class="btn btn-block btn-danger">Remove</a>
+		<div ng-repeat="board in boards | filter: {status : stat}" class="col-md-3" >
+			<div class="thumbnail">
+				
+				<a href="#/boards/{{board.id}}" class="btn btn-block btn-primary" 
+					ng-class="{'btn-primary': board.status == 0, 'btn-success': board.status == 1, 'btn-danger': board.status == 2}">
+					<span class="h4">Board <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></span><br>
+					#{{board.id}}
+				</a>
+				Time spent: {{board.start_time | difference : board.end_time}} seconds<br>
+				Mines left: {{board | minesLeft }}
+				<button ng-click="removeBoard(board.id)" class="btn btn-block btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</a>
+			</button>
+		</div>
 	</div>
-</div>
+</button>

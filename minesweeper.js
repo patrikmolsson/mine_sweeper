@@ -17,7 +17,7 @@ var minesweeper = function(){
 
 	self.constants = {
 		"num_cols" : 10,
-		"num_mines" : 14,
+		"num_mines" : 3,
 		"num_rows" : 10,
 		'POS_BLANK' : 0,
 		'POS_FLAGGED' : -2,
@@ -33,7 +33,6 @@ var minesweeper = function(){
 		// Init board
 		var board = {
 			id: null,
-			start_time: null,
 			end_time: null,
 			num_mines: self.constants.num_mines,
 			rows: []
@@ -84,7 +83,10 @@ var minesweeper = function(){
 		var new_board = {
 			id: board.id,
 			num_mines: board.num_mines,
-			rows: []
+			rows: [],
+			start_time: board.start_time,
+			end_time: board.end_time,
+			status: board.status
 		};
 
 		for(var row = 0; row < board.rows.length; row++) {
@@ -110,7 +112,8 @@ var minesweeper = function(){
 		return temp_boards;
 	}
 
-	self.solveMine = function(board, row, col){ //Recursive function to solve mine.
+
+	self.solveMine = function(board, row, col){ // Recursive function to solve mine.
 		if( row < 0 || row > self.constants.num_rows - 1 || 
 			col < 0 || col > self.constants.num_cols - 1 ) // The base case. Out of bounds.
 			return;
@@ -154,7 +157,23 @@ var minesweeper = function(){
 			board.rows[row].mines[col].external = self.constants.POS_FLAGGED;
 	}
 
-	self.boardSweeped = function(board_id){
+	self.boardSweeped = function(board){
+		//If amount cleared (>=0) = tiles-num_mines
+
+		var amount_cleared = 0;
+
+		for(var row = 0; row < board.rows.length; row++){
+			for(var col = 0; col < board.rows[row].mines.length; col++){
+				if(board.rows[row].mines[col].external >= 0)
+					amount_cleared++;
+			}
+		}
+
+		if(amount_cleared == board.rows.length*board.rows[0].mines.length - board.num_mines){
+			board.status = 1;
+			board.end_time = Date.now();
+			self.clearBoard(board);
+		}
 
 	}
 
@@ -172,14 +191,23 @@ var minesweeper = function(){
 				
 				} else if( ! ( board.rows[row].mines[col].external == self.constants.POS_FLAGGED && 
 					board.rows[row].mines[col].internal == self.constants.POS_MINE ) ) { // If it wasn't flagged.
-					board.rows[row].mines[col].external = board.rows[row].mines[col].internal;
+
+					if( board.status == self.constants.STATUS_FINISHED 
+						&& board.rows[row].mines[col].internal == self.constants.POS_MINE
+					){
+						board.rows[row].mines[col].external = self.constants.POS_FLAGGED;
+					} else {
+						board.rows[row].mines[col].external = board.rows[row].mines[col].internal;
+					}
 				} // If it was rightly flagged, don't do anything. 
 
 			}
 		}
 
-		board.end_time = Date.now();
-		board.status = self.constants.STATUS_FAILED;
+		if( board.status == self.constants.STATUS_RUNNING ){
+			board.end_time = Date.now();
+			board.status = self.constants.STATUS_FAILED;
+		}
 	}
 }
 

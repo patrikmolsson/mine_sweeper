@@ -69,6 +69,10 @@ router.route( api_string + 'boards/:board/:row/:col/:action' )
 				break;
 			case "1": //Solve
 				minesweeper.solveMine(req.board, row, col);
+
+				if(req.board.status == 0)
+					minesweeper.boardSweeped(req.board);
+				
 				break;
 		};
 
